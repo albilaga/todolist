@@ -8,6 +8,13 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
+type TodoList struct {
+	Id          uuid.UUID `db:"id"`
+	Title       string    `db:"title"`
+	Description string    `db:"description"`
+	IsCompleted bool      `db:"is_completed"`
+}
+
 type todo struct {
 	Id          uuid.UUID `db:"id"`
 	Title       string    `db:"title"`

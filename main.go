@@ -24,4 +24,10 @@ func main() {
 	if newUpdateTodo.Err != nil {
 		panic(newUpdateTodo.Err)
 	}
+
+	newGetTodo := features.NewGetTodo(conn)
+	result := newGetTodo.GetList(ctx, 0)
+	for _, item := range result {
+		fmt.Printf("ID: %v, Title: %v, Description : %v, IsCompleted: %v\n", item.Id, item.Title, item.Description, item.IsCompleted)
+	}
 }
