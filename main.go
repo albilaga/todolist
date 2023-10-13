@@ -3,32 +3,25 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
-	"time"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+
+	"todolist/features"
 )
 
 func main() {
-	cfg := getConfig()
-	dbConfig := cfg.DatabaseConfig
+	ctx := context.Background()
+	dbConfig := getConfig().DatabaseConfig
 
 	dsn := fmt.Sprintf("postgresql://%v:%v@%v:%v/%v?sslmode=%v", dbConfig.Username, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.Name, dbConfig.SslMode)
-	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, dsn)
-	defer func(conn *pgx.Conn, ctx context.Context) {
-		_ = conn.Close(ctx)
-	}(conn, context.Background())
-
+	conn, err := pgxpool.New(ctx, dsn)
 	if err != nil {
-		log.Fatal("failed to connect database", err)
+		panic(err)
 	}
 
-	var now time.Time
-	err = conn.QueryRow(ctx, "SELECT NOW()").Scan(&now)
-	if err != nil {
-		log.Fatal("failed to execute query", err)
+	newUpdateTodo := features.NewUpdateTodo(conn)
+	newUpdateTodo.CreateTodo(ctx, "testing", "this is for testing")
+	if newUpdateTodo.Err != nil {
+		panic(newUpdateTodo.Err)
 	}
-
-	fmt.Println(now)
 }
