@@ -20,7 +20,9 @@ var updateTodo *features.UpdateTodo
 
 func main() {
 	ctx := context.Background()
-	dbConfig := getConfig().DatabaseConfig
+	cfg := getConfig()
+	dbConfig := cfg.DatabaseConfig
+	appConfig := cfg.AppConfig
 
 	dsn := fmt.Sprintf("postgresql://%v:%v@%v:%v/%v?sslmode=%v", dbConfig.Username, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.Name, dbConfig.SslMode)
 	conn, err := pgxpool.New(ctx, dsn)
@@ -36,10 +38,10 @@ func main() {
 
 	r.Route("/todos", func(r chi.Router) {
 		r.Get("/", listTodos)
-		r.With(middleware.BasicAuth("admin", map[string]string{"admin": "admin"})).Post("/", createTodo)
+		r.With(middleware.BasicAuth("admin", map[string]string{appConfig.Username: appConfig.Password})).Post("/", createTodo)
 	})
 
-	_ = http.ListenAndServe(":8080", r)
+	_ = http.ListenAndServe(fmt.Sprintf(":%v", appConfig.Port), r)
 }
 
 func listTodos(w http.ResponseWriter, r *http.Request) {

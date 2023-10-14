@@ -15,8 +15,15 @@ type databaseConfig struct {
 	SslMode  string `env:"SSL_MODE"`
 }
 
+type appConfig struct {
+	Port     string `env:"PORT"`
+	Username string `env:"USERNAME"`
+	Password string `env:"PASSWORD"`
+}
+
 type config struct {
 	DatabaseConfig databaseConfig `envPrefix:"DATABASE_"`
+	AppConfig      appConfig      `envPrefix:"APP_"`
 }
 
 func getConfig() config {
