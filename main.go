@@ -71,4 +71,5 @@ func createTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render.Status(r, http.StatusCreated)
+	render.PlainText(w, r, "Ok")
 }
