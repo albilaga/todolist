@@ -41,7 +41,10 @@ func main() {
 		r.With(middleware.BasicAuth("admin", map[string]string{appConfig.Username: appConfig.Password})).Post("/", createTodo)
 	})
 
-	_ = http.ListenAndServe(fmt.Sprintf(":%v", appConfig.Port), r)
+	err = http.ListenAndServe(fmt.Sprintf(":%v", appConfig.Port), r)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func listTodos(w http.ResponseWriter, r *http.Request) {
