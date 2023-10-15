@@ -21,11 +21,15 @@ jobs:
       - name: Get dependencies
         run: go get -v -t -d ./...
 
+      - name: Create output directory
+        run: mkdir -p ./build
+
       - name: Build
         env:
           GOOS: linux
           GOARCH: amd64
-        run: go build -v -o ./build .
+        run: go build -v -o ./build/todolist .
+
       - name: Deploy to EC2
         uses: easingthemes/ssh-deploy@main
         env:
