@@ -37,7 +37,6 @@ jobs:
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: ${{ secrets.TARGET_DIR }}
         run: |
-          mkdir ~/.ssh/
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           scp -o StrictHostKeyChecking=no ./build/todolist $REMOTE_USER@$REMOTE_HOST:$TARGET
