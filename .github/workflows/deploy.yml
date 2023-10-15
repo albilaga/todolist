@@ -36,7 +36,7 @@ jobs:
           DATABASE_SSL_MODE:  ${{ secrets.DATABASE_SSL_MODE }}
           APP_PORT: ${{ secrets.APP_PORT }}
           APP_USERNAME: ${{ secrets.APP_USERNAME }}
-          APP_PASSWORD: ${{ secrets.APP+PASSWORD }}
+          APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
 
         run: go build -v -o ./build/todolist .
 
