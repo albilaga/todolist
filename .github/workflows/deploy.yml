@@ -31,10 +31,14 @@ jobs:
         run: go build -v -o ./build/todolist .
 
       - name: Deploy to EC2
-        uses: easingthemes/ssh-deploy@main
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           REMOTE_HOST: ${{ secrets.HOST_DNS }}
           REMOTE_USER: ${{ secrets.USERNAME }}
-          SOURCE: build/
           TARGET: ${{ secrets.TARGET_DIR }}
+        run: |
+          mkdir ~/.ssh/
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          scp -o StrictHostKeyChecking=no ./build/todolist $REMOTE_USER@$REMOTE_HOST:$TARGET
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST chmod +x $TARGET/todolist
