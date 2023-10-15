@@ -29,7 +29,7 @@ type config struct {
 func getConfig() config {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file", err)
+		log.Println("no .env file")
 	}
 	cfg := config{}
 	if err := env.Parse(&cfg); err != nil {
