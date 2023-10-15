@@ -28,6 +28,16 @@ jobs:
         env:
           GOOS: linux
           GOARCH: amd64
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD:  ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_PORT:  ${{ secrets.DATABASE_PORT }}
+          DATABASE_HOST:  ${{ secrets.DATABASE_HOST }}
+          DATABASE_SSL_MODE:  ${{ secrets.DATABASE_SSL_MODE }}
+          APP_PORT: ${{ secrets.APP_PORT }}
+          APP_USERNAME: ${{ secrets.APP_USERNAME }}
+          APP_PASSWORD: ${{ secrets.APP+PASSWORD }}
+
         run: go build -v -o ./build/todolist .
 
       - name: Deploy to EC2
