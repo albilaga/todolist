@@ -33,7 +33,7 @@ jobs:
           APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
         run: |
           chmod +x scripts/create_env.sh
-          bash scripts/create_env.sh
+          ./scripts/create_env.sh
           scp -o StrictHostKeyChecking=no .env $REMOTE_USER@$REMOTE_HOST:$TARGET
 
       - name: Get dependencies
