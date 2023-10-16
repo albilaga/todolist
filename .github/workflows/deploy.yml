@@ -2,23 +2,38 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
 
   build:
-    name: Build
-    runs-on: macos-latest
+    name: Deploy to EC2
+    runs-on: macOS-latest
     env:
       SERVICE_NAME: todolist
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4
 
       - name: Set up Go 1.21
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v4
         with:
-          go-version: 1.21
+          go-version: 1.21.3
+
+      - name: Generate .env file and copy it to remote
+        env:
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          DATABASE_SSL_MODE: ${{ secrets.DATABASE_SSL_MODE }}
+          APP_PORT: ${{ secrets.APP_PORT }}
+          APP_USERNAME: ${{ secrets.APP_USERNAME }}
+          APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
+        run: |
+          chmod +x scripts/create_env.sh
+          ./scripts/create_env.sh
 
       - name: Get dependencies
         run: go get -v -t -d ./...
@@ -27,26 +42,23 @@ jobs:
         run: mkdir -p ./build
 
       - name: Build
-        run: go build -v -o ./build/$SERVICE_NAME
+        env:
+          GOOS: linux
+          GOARCH: amd64
 
-  deploy:
-    name: Deploy to EC2
-    runs-on: macos-latest
-    needs: build
-    env:
-      SERVICE_NAME: ${{ env.SERVICE_NAME }}
-      EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-      HOST_DNS: ${{ secrets.HOST_DNS }}
-      USERNAME: ${{ secrets.USERNAME }}
-      TARGET_DIR: ${{ secrets.TARGET_DIR }}
-    steps:
-      - name: Generate .env file
-        run: ./generate_env.sh
+        run: go build -v -o ./build/$SERVICE_NAME .
 
       - name: Deploy to EC2
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.HOST_DNS }}
+          REMOTE_USER: ${{ secrets.USERNAME }}
+          TARGET: ${{ secrets.TARGET_DIR }}
         run: |
-          echo "$SSH_PRIVATE_KEY" | tr-d '\r' > ~/.ssh/id_rsa
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          scp -o StrictHostKeyChecking=no .env $REMOTE_USER@$REMOTE_HOST:$TARGET
           ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST sudo systemctl stop $SERVICE_NAME
-          scp -o StrictHostKeyChecking=no -r build $REMOTE_USER@$REMOTE_HOST:TARGET_DIR
+          scp -o StrictHostKeyChecking=no -r build $REMOTE_USER@$REMOTE_HOST:$TARGET
           ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST chmod +x $TARGET/$SERVICE_NAME
+#          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST sudo systemctl start $SERVICE_NAME
