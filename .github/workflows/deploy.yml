@@ -52,11 +52,11 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           REMOTE_HOST: ${{ secrets.HOST_DNS }}
           REMOTE_USER: ${{ secrets.USERNAME }}
-          TARGET: ${{ secrets.TARGET_DIR }}
+          TARGET_DIR: ${{ secrets.TARGET_DIR }}
         run: |
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST 'sudo systemctl stop $SERVICE_NAME; rm -rf $TARGET/'
-          scp -o StrictHostKeyChecking=no -r build $REMOTE_USER@$REMOTE_HOST:$TARGET/
-          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST chmod +x $TARGET/$SERVICE_NAME
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST 'sudo systemctl stop $SERVICE_NAME; rm -rf $TARGET_DIR/'
+          scp -o StrictHostKeyChecking=no -r build $REMOTE_USER@$REMOTE_HOST:$TARGET_DIR/
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST chmod +x $TARGET_DIR/$SERVICE_NAME
 #          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST sudo systemctl start $SERVICE_NAME
