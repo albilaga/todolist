@@ -6,8 +6,8 @@ do
   # Check if line isn't empty or a comment
   if [[ ! -z "$line" && ! "$line" =~ ^# ]]; then
     # remove any existing instances of the variable in .env
-    sed -i "/^$line/d" ../.env
+    sed -i "/^$line/d" .env
     # append variable to .env
-    echo "$line" >> ../.env
+    echo "$line" >> .env
   fi
-done < "../.env.sample"
+done < ".env.sample"
