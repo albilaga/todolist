@@ -56,7 +56,6 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          scp -o StrictHostKeyChecking=no .env $REMOTE_USER@$REMOTE_HOST:$TARGET
           ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST sudo systemctl stop $SERVICE_NAME
           scp -o StrictHostKeyChecking=no -r build $REMOTE_USER@$REMOTE_HOST:$TARGET
           ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST chmod +x $TARGET/$SERVICE_NAME
