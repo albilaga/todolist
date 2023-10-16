@@ -34,7 +34,6 @@ jobs:
         run: |
           chmod +x scripts/create_env.sh
           ./scripts/create_env.sh
-          scp -o StrictHostKeyChecking=no .env $REMOTE_USER@$REMOTE_HOST:$TARGET
 
       - name: Get dependencies
         run: go get -v -t -d ./...
@@ -58,7 +57,8 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          scp -o StrictHostKeyChecking=no .env $REMOTE_USER@$REMOTE_HOST:$TARGET
           ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST sudo systemctl stop $SERVICE_NAME
-          scp -o StrictHostKeyChecking=no build/todolist $REMOTE_USER@$REMOTE_HOST:$TARGET
+          scp -o StrictHostKeyChecking=no build/$SERVICE_NAME $REMOTE_USER@$REMOTE_HOST:$TARGET
           ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST chmod +x $TARGET/$SERVICE_NAME
 #          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST sudo systemctl start $SERVICE_NAME
