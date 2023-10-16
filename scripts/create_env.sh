@@ -20,7 +20,7 @@ while IFS= read -r line; do
     key="${line%%=*}"
     value="${line#*=}"
 
-    secret_value=$(get_secret_value "key" "$value")
+    secret_value=$(get_secret_value "$key" "$value")
 
     # Write to .env
     echo "$key=$secret_value"
