@@ -30,6 +30,12 @@ func main() {
 		panic(err)
 	}
 
+	err = conn.Ping(ctx)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Success ping database")
+
 	getTodo = features.NewGetTodo(conn)
 	updateTodo = features.NewUpdateTodo(conn)
 
