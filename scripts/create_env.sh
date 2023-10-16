@@ -28,4 +28,4 @@ while IFS= read -r line; do
     # Pass-through non-key-value lines
     echo "$line"
   fi
-done < .env.sample > .env
+done < .env.sample > build/.env
