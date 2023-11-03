@@ -13,7 +13,7 @@ get_secret_value() {
 }
 
 # Read .env.sample and create .env
-while IFS= read -r line; do
+while IFS= read -r line || [[ -n "$line" ]]; do
   # Check if the line contains a key-value pair
   if [[ "$line" =~ ^[A-Za-z_][A-Za-z_0-9]*= ]]; then
     # Extract key and value
