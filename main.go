@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/riandyrn/otelchi"
 	"net/http"
 	"strconv"
 
@@ -24,6 +26,15 @@ func main() {
 	dbConfig := cfg.DatabaseConfig
 	appConfig := cfg.AppConfig
 
+	serviceName := "todolist"
+	otelShutdown, err := setupOtelSDK(ctx, serviceName, "0.0.1")
+	if err != nil {
+		return
+	}
+	defer func() {
+		err = errors.Join(err, otelShutdown(context.Background()))
+	}()
+
 	dsn := fmt.Sprintf("postgresql://%v:%v@%v:%v/%v?sslmode=%v", dbConfig.Username, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.Name, dbConfig.SslMode)
 	conn, err := pgxpool.New(ctx, dsn)
 	if err != nil {
@@ -41,6 +52,7 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Use(otelchi.Middleware(serviceName, otelchi.WithChiRoutes(r)))
 
 	r.Route("/todos", func(r chi.Router) {
 		r.Get("/", listTodos)
