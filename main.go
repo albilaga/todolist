@@ -6,7 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/riandyrn/otelchi"
+	"log/slog"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
@@ -25,6 +27,9 @@ func main() {
 	cfg := getConfig()
 	dbConfig := cfg.DatabaseConfig
 	appConfig := cfg.AppConfig
+
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	slog.SetDefault(logger)
 
 	serviceName := "todolist"
 	otelShutdown, err := setupOtelSDK(ctx, serviceName, "0.0.1")
@@ -67,6 +72,7 @@ func main() {
 
 func listTodos(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	slog.Log(ctx, slog.LevelInfo, "get todos")
 	w.Header().Set("Content-Type", "application/json")
 	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
 	result := getTodo.GetList(ctx, offset)
@@ -79,6 +85,7 @@ func listTodos(w http.ResponseWriter, r *http.Request) {
 
 func createTodo(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	slog.Log(ctx, slog.LevelInfo, "create todo")
 	w.Header().Set("Content-Type", "application/json")
 
 	newTodo := &TodoRequest{}
