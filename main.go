@@ -54,7 +54,7 @@ func main() {
 	updateTodo = features.NewUpdateTodo(conn)
 
 	r := chi.NewRouter()
-	r.Use(middleware.Logger)
+	//r.Use(middleware.Logger)
 	//r.Use(otelchi.Middleware(serviceName, otelchi.WithChiRoutes(r)))
 
 	r.Route("/todos", func(r chi.Router) {
