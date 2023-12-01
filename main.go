@@ -28,16 +28,6 @@ func main() {
 
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	slog.SetDefault(logger)
-
-	//serviceName := "todolist"
-	//otelShutdown, err := setupOtelSDK(ctx, serviceName, "0.0.1")
-	//if err != nil {
-	//	return
-	//}
-	//defer func() {
-	//	err = errors.Join(err, otelShutdown(context.Background()))
-	//}()
-
 	dsn := fmt.Sprintf("postgresql://%v:%v@%v:%v/%v?sslmode=%v", dbConfig.Username, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.Name, dbConfig.SslMode)
 	conn, err := pgxpool.New(ctx, dsn)
 	if err != nil {
@@ -48,14 +38,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Success ping database")
+	logger.Info("Success ping database")
 
 	getTodo = features.NewGetTodo(conn)
 	updateTodo = features.NewUpdateTodo(conn)
 
 	r := chi.NewRouter()
-	//r.Use(middleware.Logger)
-	//r.Use(otelchi.Middleware(serviceName, otelchi.WithChiRoutes(r)))
 
 	r.Route("/todos", func(r chi.Router) {
 		r.Get("/", listTodos)
